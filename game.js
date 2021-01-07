@@ -15,12 +15,16 @@ let config = {
   },
 };
 
-let text, player, cursors, platforms;
+let text, player, cursors, platforms, coins;
 // 1st scene -> preLoad , update , create
 gameScene.preload = function () {
   this.load.spritesheet("player", ".//assets//sprite//char.png", {
     frameWidth: 40,
     frameHeight: 52,
+  });
+  this.load.spritesheet("coin", ".//assets//sprite//coin.png", {
+    frameWidth: 30,
+    frameHeight: 30,
   });
   this.load.image("platform", ".//assets//sprite//platform.png");
 };
@@ -39,7 +43,14 @@ gameScene.create = function () {
   platforms.create(555, 200, "platform").setScale(0.2, 0.3).refreshBody();
   platforms.create(600, 430, "platform").setScale(0.2, 0.3).refreshBody();
 
-  // **********************animation creating
+  // **********************coins**********
+  coins = this.physics.add.group({
+    key: "coin",
+    repeat: 10,
+    setXY: { x: 20, y: 0, stepX: 70 },
+  });
+
+  // **********************animation creating******************
   this.anims.create({
     key: "right",
     frames: this.anims.generateFrameNumbers("player", { start: 0, end: 9 }),
@@ -71,10 +82,19 @@ gameScene.create = function () {
     frameRate: 20,
   });
 
+  this.anims.create({
+    key: "shine",
+    frames: this.anims.generateFrameNumbers("coin", { start: 0, end: 9 }),
+    frameRate: playerFrameRate,
+    repeat: -1,
+  });
+  coins.playAnimation("shine");
+
   player.anims.play("ideal");
   //  ****************collision************
   player.setCollideWorldBounds(true);
   this.physics.add.collider(platforms, player);
+  this.physics.add.collider(platforms, coins);
 
   // inputs from the keyBoards************
   cursors = this.input.keyboard.createCursorKeys();
